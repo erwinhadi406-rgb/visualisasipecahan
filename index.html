@@ -67,6 +67,23 @@ svg[viewBox="-55 -55 110 110"]{width:11rem!important}
 .box{width:min(26rem,100%)}.box button{min-height:3rem}
 @media (max-width:640px){.app{flex-direction:column;align-items:stretch}.pal{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto}.pal button{width:3.2rem}.stage{width:100%}}
 @media (max-height:520px) and (orientation:landscape){body{--H:clamp(9rem,52vh,20rem)}h1{margin:6px}}
+html{font-size:clamp(12px,min(1.8vh,2.2vw),44px)}
+@media (max-width:640px){html{font-size:16px}}
+body{--H:clamp(9rem,40vh,40rem)}
+h1{margin:.4rem 8px 0}.sub{margin:0 8px .3rem;font-size:.85rem}
+.inputs{margin:.4rem 8px 0}.err{min-height:.9rem;margin:0}.col .lab{height:3.4rem}
+.fi{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:.25rem .4rem;padding:.3rem .6rem}
+.fi small{width:100%;text-align:center}
+.fi hr{width:0;height:1.9rem;border:0;border-left:3px solid var(--fg);transform:rotate(20deg);margin:0 .2rem}
+.fi input{width:5.5rem}.fi input::placeholder{font-size:.7rem;font-weight:400}
+@media (min-width:700px){.ops:has(#mat){position:absolute;top:.6rem;right:.8rem;margin:0}.hint{display:none}.app{margin:.3rem auto}}
+@media (min-width:900px) and (min-aspect-ratio:5/4){
+ .stage{display:grid;grid-template-columns:auto auto;justify-content:center;column-gap:1.5rem;align-items:start}
+ .stage>.cols{grid-column:1;grid-row:1}.stage>#cmpops{grid-column:1;grid-row:2}.stage>.msg{grid-column:1;grid-row:3}.stage>.ops:last-child{grid-column:1;grid-row:4}
+ .stage>.res{grid-column:2;grid-row:1/span 4;margin:0;width:min(34rem,38vw);max-height:calc(100vh - 9rem);overflow:auto;font-size:.9rem}
+}
+#mus{position:fixed;right:.8rem;bottom:calc(.8rem + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:.5rem;background:var(--card);border:1px solid var(--mut);border-radius:2rem;padding:.2rem .7rem;z-index:5}
+#mus button{border:0;background:none;font-size:1.4rem;padding:0 .2rem;min-height:2.4rem}#mus input{width:6rem}
 </style></head><body>
 <h1 id="ttl">Membandingkan Pecahan</h1><div class="ops"><button id="mat">📚 Pilih materi</button></div>
 <p class="sub">Pilih batang (kiri/kanan), lalu klik balok pecahan di samping untuk mengisinya.</p>
@@ -93,6 +110,7 @@ svg[viewBox="-55 -55 110 110"]{width:11rem!important}
  </div>
 </div>
 <p class="hint">Klik kotak di dalam batang untuk mengisi / mengosongkan sampai kotak itu. Klik batang untuk memilihnya.</p>
+<div id="mus"><button id="sbtn" title="Efek suara" aria-label="Efek suara">🔔</button><button id="mbtn" title="Musik latar" aria-label="Musik latar">🔇</button><input id="vol" type="range" min="0" max="100" value="50" aria-label="Volume"></div>
 <div class="modal" id="modal"><div class="box"><h2>Pilih Materi</h2><p>Pilih topik pecahan yang ingin dipelajari</p><div id="menu"></div></div></div>
 <script>
 var D=[[1,'1','#e53935'],[2,'½','#ec4f8a'],[3,'⅓','#fb8c00'],[4,'¼','#fdd835'],[5,'⅕','#43a047'],[6,'⅙','#1e88e5'],[8,'⅛','#3949ab'],[10,'1/10','#8e24aa'],[12,'1/12','#555']];
@@ -101,14 +119,14 @@ var B=[{d:4,n:3},{d:0,n:0}],act=0,guess=null,line=false;
 var pal=document.getElementById('pal');
 D.forEach(function(d){var b=document.createElement('button');b.style.background=d[2];if(d[0]==4)b.style.color='#111';
  b.innerHTML=d[0]==1?'1':'1/'+d[0];b.onclick=function(){add(d[0])};pal.appendChild(b)});
-function add(d){var b=B[act];if(b.d!=d){b.d=d;b.n=0}if(b.n<b.d)b.n++;guess=null;render()}
+function add(d){var b=B[act];if(b.d!=d){b.d=d;b.n=0}if(b.n<b.d)b.n++;sfx([520+b.n*40]);guess=null;render()}
 var P=[[3,5,7,10],[3,4,4,6],[6,8,9,12]],pr=document.getElementById('presets');
 P.forEach(function(p){var b=document.createElement('button');b.textContent=p[0]+'/'+p[1]+' vs '+p[2]+'/'+p[3];
  b.onclick=function(){B=[{d:p[1],n:p[0]},{d:p[3],n:p[2]}];guess=null;render()};pr.appendChild(b)});
-[0,1].forEach(function(i){document.getElementById('c'+i).onclick=function(){act=i;render()}});
-document.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){guess=b.dataset.s;render()}});
-document.getElementById('gar').onclick=function(){line=!line;render()};
-document.getElementById('rst').onclick=function(){['n0','d0','n1','d1'].forEach(function(id){document.getElementById(id).value=''});document.getElementById('err').textContent='';B=[{d:0,n:0},{d:0,n:0}];guess=null;line=false;render()};
+[0,1].forEach(function(i){document.getElementById('c'+i).onclick=function(){sfx([392],'triangle');act=i;render()}});
+document.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){guess=b.dataset.s;sfx(guess==cmp()?[659,880]:[196]);render()}});
+document.getElementById('gar').onclick=function(){line=!line;sfx([line?640:420]);render()};
+document.getElementById('rst').onclick=function(){sfx([330,262,196],'triangle');['n0','d0','n1','d1'].forEach(function(id){document.getElementById(id).value=''});document.getElementById('err').textContent='';B=[{d:0,n:0},{d:0,n:0}];guess=null;line=false;render()};
 function syncInp(){[0,1].forEach(function(i){var ne=document.getElementById('n'+i),de=document.getElementById('d'+i);
  if(!B[i].d&&(ne.value!==''||de.value!==''))return;
  if(document.activeElement!==ne)ne.value=B[i].d?B[i].n:'';
@@ -117,7 +135,7 @@ function readInp(i){var ne=document.getElementById('n'+i).value,de=document.getE
  if(de===''){B[i]={d:0,n:0}}
  else if(!(d>=1&&d<=12)){er.textContent='Penyebut harus bilangan bulat 1 sampai 12.';return}
  else{if(n<0)n=0;if(n>d){n=d;er.textContent='Pembilang tidak boleh lebih besar dari penyebut (maksimal 1 utuh).'}B[i]={d:d,n:n}}
- act=i;guess=null;render()}
+ sfx([500],'triangle');act=i;guess=null;render()}
 [0,1].forEach(function(i){['n','d'].forEach(function(k){var el=document.getElementById(k+i);el.oninput=function(){readInp(i)};el.onchange=function(){readInp(i)};el.onfocus=function(){act=i;document.getElementById('c0').className='col'+(act==0?' act':'');document.getElementById('c1').className='col'+(act==1?' act':'')}})});
 function cmp(){var a=B[0],b=B[1];if(!a.d||!b.d)return null;var x=a.n*b.d,y=b.n*a.d;return x<y?'<':x>y?'>':'='}
 function render(){syncInp();
@@ -128,7 +146,7 @@ function render(){syncInp();
    t+='<div class="t'+(f?' f':'')+'" data-i="'+i+'" data-k="'+k+'" '+(f?'style="background:'+col[b.d]+(b.d==4?';color:#111':'')+'"':'')+'>1/'+b.d+'</div>'}
   el.innerHTML='<div class="lab">'+lab+'</div><div class="bar">'+t+'</div>'});
  document.querySelectorAll('.t').forEach(function(t){t.onclick=function(e){e.stopPropagation();
-  var i=+t.dataset.i,k=+t.dataset.k;act=i;B[i].n=(k<=B[i].n)?k-1:k;guess=null;render()}});
+  var i=+t.dataset.i,k=+t.dataset.k,fill=k>B[i].n;sfx(fill?[300+k*45]:[460-k*25],fill?'sine':'triangle');act=i;B[i].n=(k<=B[i].n)?k-1:k;guess=null;render()}});
  var c=cmp(),m=document.getElementById('msg'),ci=document.getElementById('circ');
  ci.textContent=guess||'';m.className='msg';m.textContent='';
  if(c===null){if(guess){m.textContent='Isi kedua batang dulu.'}}
@@ -165,7 +183,7 @@ function opsView(){var cm=mode=='cmp',a=B[0],b=B[1],res=document.getElementById(
  res.innerHTML=h}
 function row(q,f){var h='<div class="st">';for(var k=1;k<=q;k++){var c=f(k);h+='<i'+(c?' style="background:'+c+'"':'')+'></i>'}return h+'</div>'}
 function cap(t){return '<div class="cap">'+t+'</div>'}
-var st=1;function setSt(k){st=k;opsView()}
+var st=1;function setSt(k){if(k!=st)sfx(k==4?[523,659,784,1047]:k>st?[400+k*60]:[560-k*40]);st=k;opsView()}
 function pic(o,d,n,m,sp,c){var W=200,H=100,s='<svg viewBox="0 0 200 100" style="width:100%;display:block"><rect width="200" height="100" fill="#fff"/>';
  s+=o=='c'?'<rect width="'+W*n/d+'" height="100" fill="'+c+'" fill-opacity=".7"/>':'<rect width="200" height="'+H*n/d+'" fill="'+c+'" fill-opacity=".7"/>';
  if(sp)for(var j=1;j<m;j++)s+=o=='c'?'<line x1="0" x2="200" y1="'+H*j/m+'" y2="'+H*j/m+'" stroke="#e53935"/>':'<line y1="0" y2="100" x1="'+W*j/m+'" x2="'+W*j/m+'" stroke="#e53935"/>';
@@ -202,8 +220,29 @@ function intro(f){if(!f.d)return '<p>Isi pecahan di kolom atas atau klik balok d
  +'<p>Dari bagian itu, '+P+f.n+E+' bagian diarsir. Itulah <u>pembilang</u> (angka atas).</p>'
  +'<p style="text-align:center;font-size:1.2rem"><span style="color:#2f80ed">'+f.n+'</span> per <span style="color:#fb8c00">'+f.d+'</span> = '+F(f.n,f.d)+'</p>'
  +'<p>Dibaca "'+f.n+' per '+f.d+'" atau '+f.n+' dari '+f.d+' bagian. Ini '+kind+'.</p>'}
+var AC=null,FL=null,MG=null,SG=null,mOn=false,mTm=null,mNext=0,mStep=0,mi=2,vol=.5;
+var CH=[[261.63,329.63,392],[220,261.63,329.63],[174.61,220,261.63],[196,246.94,293.66]],ML=[523.25,587.33,659.25,783.99,880];
+function pref(){try{return localStorage.getItem('mus')}catch(e){return null}}
+function setPref(v){try{localStorage.setItem('mus',v)}catch(e){}}
+function note(f,t,d,ty,v,dst){var o=AC.createOscillator(),g=AC.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dst||FL);o.start(t);o.stop(t+d+.05)}
+function mBar(t){var c=CH[mStep%4];c.forEach(function(f){note(f/2,t,3.8,'sine',.07)});note(c[0]/4,t,1.8,'sine',.1);
+ for(var i=0;i<8;i++){if(Math.random()<.72){mi=Math.max(0,Math.min(4,mi+Math.floor(Math.random()*3)-1));note(ML[mi],t+i*.5,.9,'triangle',.08)}}mStep++}
+function mSched(){while(mNext<AC.currentTime+2){mBar(mNext);mNext+=4}}
+function mInit(){if(AC)return true;var C=window.AudioContext||window.webkitAudioContext;if(!C)return false;AC=new C();MG=AC.createGain();MG.gain.value=0;FL=AC.createBiquadFilter();FL.type='lowpass';FL.frequency.value=2400;FL.connect(MG);MG.connect(AC.destination);SG=AC.createGain();SG.gain.value=.7;SG.connect(AC.destination);return true}
+function mSet(on){mOn=on;var b=document.getElementById('mbtn');b.textContent=on?'🎵':'🔇';b.setAttribute('aria-pressed',on);
+ if(on){if(!mInit()){mOn=false;return}AC.resume();mNext=AC.currentTime+.15;mSched();clearInterval(mTm);mTm=setInterval(mSched,500);MG.gain.setTargetAtTime(vol,AC.currentTime,.3)}
+ else{clearInterval(mTm);if(MG)MG.gain.setTargetAtTime(0,AC.currentTime,.15)}}
+var sOn=true;function prefS(){try{return localStorage.getItem('sfx')}catch(e){return null}}
+function sfx(a,ty){if(!AC||!sOn)return;if(AC.state=='suspended')AC.resume();a.forEach(function(f,i){note(f,AC.currentTime+i*.08,.3,ty||'sine',.25,SG)})}
+function mFirst(e){if(e.target.closest&&e.target.closest('#mus'))return;document.removeEventListener('pointerdown',mFirst);mInit()&&AC.resume();if(pref()!=='0')mSet(true)}
+document.addEventListener('pointerdown',mFirst);
+sOn=prefS()!=='0';document.getElementById('sbtn').textContent=sOn?'🔔':'🔕';
+document.getElementById('sbtn').onclick=function(){sOn=!sOn;try{localStorage.setItem('sfx',sOn?'1':'0')}catch(e){}this.textContent=sOn?'🔔':'🔕';mInit();if(sOn)sfx([660])};
+document.getElementById('mbtn').onclick=function(){var on=!mOn;setPref(on?'1':'0');mSet(on)};
+document.getElementById('vol').oninput=function(){vol=this.value/100;if(MG&&mOn)MG.gain.setTargetAtTime(vol,AC.currentTime,.05)};
+document.addEventListener('visibilitychange',function(){if(!AC)return;if(document.hidden)AC.suspend();else if(mOn)AC.resume()});
 var mm=document.getElementById('modal'),mn=document.getElementById('menu');
-Object.keys(NAME).forEach(function(k){var b=document.createElement('button');b.textContent=NAME[k];b.onclick=function(){mode=k;st=1;act=0;guess=null;mm.classList.remove('open');render()};mn.appendChild(b)});
+Object.keys(NAME).forEach(function(k){var b=document.createElement('button');b.textContent=NAME[k];b.onclick=function(){sfx([523,659,784]);mode=k;st=1;act=0;guess=null;mm.classList.remove('open');render()};mn.appendChild(b)});
 document.getElementById('mat').onclick=function(){mm.classList.add('open')};
 mm.onclick=function(e){if(e.target===mm)mm.classList.remove('open')};
 mm.classList.add('open');
