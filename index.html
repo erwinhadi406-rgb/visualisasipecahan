@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Membandingkan Pecahan</title>
+<style>
+:root{--bg:#fff;--fg:#1f2937;--mut:#6b7280;--line:#1f2937;--card:#f1f5f9;--blue:#2f80ed;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--fg:#e5e7eb;--mut:#94a3b8;--line:#e5e7eb;--card:#1e293b}}
+:root[data-theme="dark"]{--bg:#0f172a;--fg:#e5e7eb;--mut:#94a3b8;--line:#e5e7eb;--card:#1e293b}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;--H:min(340px,42vh)}
+h1{color:var(--blue);text-align:center;font-size:1.6rem;margin:14px 8px 4px}
+.sub{text-align:center;color:var(--mut);font-size:.9rem;margin:0 8px 8px}
+.presets,.ops{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 8px}
+button{font:inherit;border:1px solid var(--mut);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 12px;cursor:pointer}
+button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.app{display:flex;gap:12px;max-width:760px;margin:8px auto;padding:0 10px;align-items:flex-start}
+.pal{display:flex;flex-direction:column;gap:5px;width:54px;flex:none}
+.pal button{padding:0;height:34px;color:#fff;font-weight:700;border:0;font-size:.8rem;line-height:1}
+.pal button:hover{filter:brightness(1.12)}
+.stage{flex:1;min-width:0}
+.cols{display:flex;justify-content:center;align-items:flex-end;gap:0}
+.col{width:96px;text-align:center;cursor:pointer}
+.col .lab{height:62px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-weight:700;font-size:1.3rem}
+.col .lab i{display:block;border-top:3px solid currentColor;padding-top:1px;font-style:normal}
+.col.act .bar{outline:3px solid var(--blue);outline-offset:3px}
+.bar{height:var(--H);border:2px solid #c0392b;margin:6px auto 0;width:84px;display:flex;flex-direction:column-reverse;border-radius:3px;overflow:hidden}
+.t{flex:1;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;border-top:2px solid rgba(0,0,0,.25);background:#fff;color:#111}
+.t.f{color:#fff}
+.mid{width:150px;position:relative;display:flex;flex-direction:column;align-items:center}
+.circ{width:52px;height:52px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-top:14px}
+.mid svg{position:absolute;left:0;bottom:0;width:150px;height:calc(var(--H) + 2px);overflow:visible}
+.msg{text-align:center;min-height:1.5em;font-weight:600;margin:8px}
+.ok{color:#16a34a}.no{color:#dc2626}
+.hint{text-align:center;color:var(--mut);font-size:.85rem;margin:4px 10px 14px}
+.inputs{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin:10px 8px 2px}
+.fi{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:10px;background:var(--card)}
+.fi input{width:64px;text-align:center;font:inherit;font-weight:700;font-size:1.1rem;padding:4px;border:1px solid var(--mut);border-radius:6px;background:var(--bg);color:var(--fg)}
+.fi hr{width:64px;border:0;border-top:3px solid var(--fg);margin:0}
+.fi small{color:var(--mut);font-size:.75rem}
+.err{text-align:center;color:#dc2626;font-size:.85rem;min-height:1.2em;margin:2px 8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9;padding:16px}.modal.open{display:flex}
+.box{background:var(--bg);color:var(--fg);border-radius:14px;padding:18px;width:min(360px,100%);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.box h2{margin:0 0 2px;color:var(--blue);text-align:center}.box p{margin:0 0 8px;text-align:center;color:var(--mut);font-size:.85rem}
+.box button{display:block;width:100%;margin:8px 0;padding:12px;font-weight:600;text-align:left}
+.res{max-width:520px;margin:4px auto 10px;padding:10px 14px;background:var(--card);border-radius:10px;font-size:.95rem}.res p{margin:6px 0}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.2;font-weight:700}.fr b:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.st{display:flex;margin:3px 0;border:2px solid #2f80ed}.st i{flex:1;height:22px;border-left:1px solid rgba(0,0,0,.2);background:var(--bg)}.st i.f{background:#2f80ed}.st i:first-child{border-left:0}
+.cap{font-size:.85rem;color:var(--mut);margin:8px 0 2px}.viz{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--mut)}
+.gr{display:grid;width:min(240px,100%);aspect-ratio:1;margin:6px auto;border:2px solid var(--line)}.gr i{border:1px solid rgba(0,0,0,.25);background:var(--bg)}
+.pics{display:flex;align-items:center;gap:8px}.pics>div{flex:1;min-width:0}.op{font-size:1.6rem}.lb{margin-top:4px}.lb>div{text-align:center}
+.x{display:inline-block;font-size:.72rem;color:#e53935;line-height:1.6;margin:0 4px;vertical-align:middle;text-align:left}
+.nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}.nav button{padding:4px 10px}.eq{text-align:center;margin:10px 0 2px;font-size:1.05rem}
+html{font-size:clamp(16px,.55vw + 10px,40px);-webkit-text-size-adjust:100%}
+@media (min-width:1600px){html{font-size:clamp(22px,1.15vw,48px)}}
+body{font-size:1rem;--H:clamp(14rem,44vh,40rem);overflow-x:hidden}
+button,.col,.t{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button{min-height:2.75rem;padding:.4rem .9rem;font-size:1rem}
+h1{font-size:clamp(1.4rem,2.2vw + .8rem,3rem)}
+.app{max-width:min(96vw,64rem);gap:.8rem;padding:0 .6rem}
+.pal{width:3.6rem}.pal button{min-height:0;height:2.75rem;padding:0;font-size:.85rem}
+.col{width:6.2rem}.col .lab{height:4.2rem}.bar{width:5.4rem}
+.mid{width:clamp(4.5rem,15vw,12rem)}.mid svg{width:100%}
+.circ{width:3.4rem;height:3.4rem}
+.fi input{width:5rem;min-height:2.6rem}.fi hr{width:5rem}
+.st i{height:1.4rem}.gr{width:min(18rem,100%)}.res{max-width:min(100%,42rem);font-size:1rem}
+svg[viewBox="-55 -55 110 110"]{width:11rem!important}
+.box{width:min(26rem,100%)}.box button{min-height:3rem}
+@media (max-width:640px){.app{flex-direction:column;align-items:stretch}.pal{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto}.pal button{width:3.2rem}.stage{width:100%}}
+@media (max-height:520px) and (orientation:landscape){body{--H:clamp(9rem,52vh,20rem)}h1{margin:6px}}
+</style></head><body>
+<h1 id="ttl">Membandingkan Pecahan</h1><div class="ops"><button id="mat">📚 Pilih materi</button></div>
+<p class="sub">Pilih batang (kiri/kanan), lalu klik balok pecahan di samping untuk mengisinya.</p>
+<div class="presets" id="presets" style="display:none"></div>
+<div class="inputs">
+ <div class="fi"><small>Pecahan kiri</small><input id="n0" type="number" min="0" max="12" inputmode="numeric" placeholder="pembilang"><hr><input id="d0" type="number" min="1" max="12" inputmode="numeric" placeholder="penyebut"></div>
+ <b style="font-size:1.2rem">vs</b>
+ <div class="fi"><small>Pecahan kanan</small><input id="n1" type="number" min="0" max="12" inputmode="numeric" placeholder="pembilang"><hr><input id="d1" type="number" min="1" max="12" inputmode="numeric" placeholder="penyebut"></div>
+</div>
+<div class="err" id="err"></div>
+<div class="app">
+ <div class="pal" id="pal"></div>
+ <div class="stage">
+  <div class="cols">
+   <div class="col act" id="c0"></div>
+   <div class="mid"><div class="circ" id="circ"></div><svg id="ln"></svg></div>
+   <div class="col" id="c1"></div>
+  </div>
+  <div class="ops" id="cmpops">
+   <button data-s="<">Kurang dari &lt;</button><button data-s=">">Lebih dari &gt;</button><button data-s="=">Sama dengan =</button>
+  </div>
+  <div class="msg" id="msg"></div><div class="res" id="res" style="display:none"></div>
+  <div class="ops"><button id="gar">Tampilkan garis</button><button id="rst">Atur ulang</button></div>
+ </div>
+</div>
+<p class="hint">Klik kotak di dalam batang untuk mengisi / mengosongkan sampai kotak itu. Klik batang untuk memilihnya.</p>
+<div class="modal" id="modal"><div class="box"><h2>Pilih Materi</h2><p>Pilih topik pecahan yang ingin dipelajari</p><div id="menu"></div></div></div>
+<script>
+var D=[[1,'1','#e53935'],[2,'½','#ec4f8a'],[3,'⅓','#fb8c00'],[4,'¼','#fdd835'],[5,'⅕','#43a047'],[6,'⅙','#1e88e5'],[8,'⅛','#3949ab'],[10,'1/10','#8e24aa'],[12,'1/12','#555']];
+var col={7:'#00897b',9:'#6d4c41',11:'#c0792b'};D.forEach(function(d){col[d[0]]=d[2]});
+var B=[{d:4,n:3},{d:0,n:0}],act=0,guess=null,line=false;
+var pal=document.getElementById('pal');
+D.forEach(function(d){var b=document.createElement('button');b.style.background=d[2];if(d[0]==4)b.style.color='#111';
+ b.innerHTML=d[0]==1?'1':'1/'+d[0];b.onclick=function(){add(d[0])};pal.appendChild(b)});
+function add(d){var b=B[act];if(b.d!=d){b.d=d;b.n=0}if(b.n<b.d)b.n++;guess=null;render()}
+var P=[[3,5,7,10],[3,4,4,6],[6,8,9,12]],pr=document.getElementById('presets');
+P.forEach(function(p){var b=document.createElement('button');b.textContent=p[0]+'/'+p[1]+' vs '+p[2]+'/'+p[3];
+ b.onclick=function(){B=[{d:p[1],n:p[0]},{d:p[3],n:p[2]}];guess=null;render()};pr.appendChild(b)});
+[0,1].forEach(function(i){document.getElementById('c'+i).onclick=function(){act=i;render()}});
+document.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){guess=b.dataset.s;render()}});
+document.getElementById('gar').onclick=function(){line=!line;render()};
+document.getElementById('rst').onclick=function(){['n0','d0','n1','d1'].forEach(function(id){document.getElementById(id).value=''});document.getElementById('err').textContent='';B=[{d:0,n:0},{d:0,n:0}];guess=null;line=false;render()};
+function syncInp(){[0,1].forEach(function(i){var ne=document.getElementById('n'+i),de=document.getElementById('d'+i);
+ if(!B[i].d&&(ne.value!==''||de.value!==''))return;
+ if(document.activeElement!==ne)ne.value=B[i].d?B[i].n:'';
+ if(document.activeElement!==de)de.value=B[i].d?B[i].d:''})}
+function readInp(i){var ne=document.getElementById('n'+i).value,de=document.getElementById('d'+i).value,er=document.getElementById('err'),d=parseInt(de,10),n=parseInt(ne,10)||0;er.textContent='';
+ if(de===''){B[i]={d:0,n:0}}
+ else if(!(d>=1&&d<=12)){er.textContent='Penyebut harus bilangan bulat 1 sampai 12.';return}
+ else{if(n<0)n=0;if(n>d){n=d;er.textContent='Pembilang tidak boleh lebih besar dari penyebut (maksimal 1 utuh).'}B[i]={d:d,n:n}}
+ act=i;guess=null;render()}
+[0,1].forEach(function(i){['n','d'].forEach(function(k){var el=document.getElementById(k+i);el.oninput=function(){readInp(i)};el.onchange=function(){readInp(i)};el.onfocus=function(){act=i;document.getElementById('c0').className='col'+(act==0?' act':'');document.getElementById('c1').className='col'+(act==1?' act':'')}})});
+function cmp(){var a=B[0],b=B[1];if(!a.d||!b.d)return null;var x=a.n*b.d,y=b.n*a.d;return x<y?'<':x>y?'>':'='}
+function render(){syncInp();
+ [0,1].forEach(function(i){var b=B[i],el=document.getElementById('c'+i),h='';
+  el.className='col'+(act==i?' act':'');
+  var lab=b.d?'<span>'+b.n+'</span><i>'+b.d+'</i>':'<span style="color:var(--mut)">?</span>';
+  var t='';for(var k=1;k<=b.d;k++){var f=k<=b.n;
+   t+='<div class="t'+(f?' f':'')+'" data-i="'+i+'" data-k="'+k+'" '+(f?'style="background:'+col[b.d]+(b.d==4?';color:#111':'')+'"':'')+'>1/'+b.d+'</div>'}
+  el.innerHTML='<div class="lab">'+lab+'</div><div class="bar">'+t+'</div>'});
+ document.querySelectorAll('.t').forEach(function(t){t.onclick=function(e){e.stopPropagation();
+  var i=+t.dataset.i,k=+t.dataset.k;act=i;B[i].n=(k<=B[i].n)?k-1:k;guess=null;render()}});
+ var c=cmp(),m=document.getElementById('msg'),ci=document.getElementById('circ');
+ ci.textContent=guess||'';m.className='msg';m.textContent='';
+ if(c===null){if(guess){m.textContent='Isi kedua batang dulu.'}}
+ else if(guess){var ok=guess==c;m.className='msg '+(ok?'ok':'no');
+  m.textContent=ok?'Benar! '+B[0].n+'/'+B[0].d+({'<':' kurang dari ','>':' lebih dari ','=':' sama dengan '}[c])+B[1].n+'/'+B[1].d:'Belum tepat, coba lagi.'}
+ var s=document.getElementById('ln');s.innerHTML='';
+ if(line&&c!==null){var H=document.querySelector('.bar').offsetHeight;
+  var y0=H*(1-B[0].n/B[0].d)+2,y1=H*(1-B[1].n/B[1].d)+2;
+  var W=document.querySelector('.mid').offsetWidth;s.innerHTML='<line x1="0" y1="'+y0+'" x2="'+W+'" y2="'+y1+'" stroke="currentColor" stroke-width="2.5"/><circle cx="0" cy="'+y0+'" r="5" fill="#2f80ed"/><circle cx="'+W+'" cy="'+y1+'" r="5" fill="#2f80ed"/>';
+  s.style.color='var(--line)'}
+ document.getElementById('gar').className=line?'on':'';opsView();
+}
+var mode='intro',SYM={add:'+',sub:'−',mul:'×',div:'÷'},NAME={intro:'Pengenalan Pecahan',cmp:'Membandingkan Pecahan',add:'Penjumlahan Pecahan',sub:'Pengurangan Pecahan',mul:'Perkalian Pecahan',div:'Pembagian Pecahan'};
+function g(a,b){return b?g(b,a%b):a}
+function F(n,d){return '<span class="fr"><b>'+n+'</b><b>'+d+'</b></span>'}
+function strips(n,q){var h='',l=n,r=0;do{h+='<div class="st">';for(var k=1;k<=q;k++)h+='<i'+(k<=l?' class="f"':'')+'></i>';h+='</div>';l-=q;r++}while(l>0&&r<6);return h}
+function opsView(){var cm=mode=='cmp',a=B[0],b=B[1],res=document.getElementById('res');
+ document.getElementById('ttl').textContent=NAME[mode];
+ document.getElementById('cmpops').style.display=cm?'':'none';document.getElementById('gar').style.display=cm?'':'none';
+ res.style.display=cm?'none':'';
+ var it=mode=='intro';document.getElementById('c1').style.display=it?'none':'';document.querySelector('.mid').style.display=it?'none':'';var ii=document.querySelectorAll('.inputs>*');ii[1].style.display=ii[2].style.display=it?'none':'';
+ if(it){act=0;res.innerHTML=intro(B[0]);return}
+ if(cm)return;
+ document.getElementById('circ').textContent=SYM[mode];document.getElementById('msg').textContent='';document.getElementById('ln').innerHTML='';
+ if(!a.d||!b.d){res.innerHTML='<p>Isi kedua pecahan untuk melihat langkah penyelesaian.</p>';return}
+ var n,d,h='',s=SYM[mode];var L=a.d*b.d/g(a.d,b.d),x=a.n*L/a.d,y=b.n*L/b.d;
+ if(mode=='add'||mode=='sub'){var L=a.d*b.d/g(a.d,b.d),x=a.n*L/a.d,y=b.n*L/b.d;n=mode=='add'?x+y:x-y;d=L;
+  h+='<p>1. Samakan penyebut (KPK '+a.d+' dan '+b.d+' = '+L+'): '+F(a.n,a.d)+'='+F(x,L)+' dan '+F(b.n,b.d)+'='+F(y,L)+'</p><p>2. '+(mode=='add'?'Jumlahkan':'Kurangkan')+' pembilang: '+F(x,L)+s+F(y,L)+'='+F(n,L)+'</p>'}
+ else if(mode=='mul'){n=a.n*b.n;d=a.d*b.d;h+='<p>1. Kalikan pembilang dan penyebut: '+F(a.n,a.d)+'×'+F(b.n,b.d)+'='+F(n,d)+'</p>'}
+ else{if(!b.n){res.innerHTML='<p class="no">Tidak bisa dibagi dengan 0.</p>';return}n=a.n*b.d;d=a.d*b.n;h+='<p>1. Balik pecahan kedua, lalu kalikan: '+F(a.n,a.d)+'×'+F(b.d,b.n)+'='+F(n,d)+'</p>'}
+ h=viz(mode,a,b,L,x,y)+h;var k=g(Math.abs(n),d)||1,sn=n/k,sd=d/k;
+ h+='<p><b>Hasil:</b> '+F(sn,sd)+(k>1?' (disederhanakan dari '+F(n,d)+')':'')+(n>=0&&sd>1&&sn>sd?' = '+Math.floor(sn/sd)+' '+F(sn%sd,sd):'')+'</p>';
+ if(n<0)h+='<p class="no">Hasil negatif karena pecahan pertama lebih kecil dari pecahan kedua.</p>';else h+=strips(sn,sd);
+ res.innerHTML=h}
+function row(q,f){var h='<div class="st">';for(var k=1;k<=q;k++){var c=f(k);h+='<i'+(c?' style="background:'+c+'"':'')+'></i>'}return h+'</div>'}
+function cap(t){return '<div class="cap">'+t+'</div>'}
+var st=1;function setSt(k){st=k;opsView()}
+function pic(o,d,n,m,sp,c){var W=200,H=100,s='<svg viewBox="0 0 200 100" style="width:100%;display:block"><rect width="200" height="100" fill="#fff"/>';
+ s+=o=='c'?'<rect width="'+W*n/d+'" height="100" fill="'+c+'" fill-opacity=".7"/>':'<rect width="200" height="'+H*n/d+'" fill="'+c+'" fill-opacity=".7"/>';
+ if(sp)for(var j=1;j<m;j++)s+=o=='c'?'<line x1="0" x2="200" y1="'+H*j/m+'" y2="'+H*j/m+'" stroke="#e53935"/>':'<line y1="0" y2="100" x1="'+W*j/m+'" x2="'+W*j/m+'" stroke="#e53935"/>';
+ for(var i=1;i<d;i++)s+=o=='c'?'<line y1="0" y2="100" x1="'+W*i/d+'" x2="'+W*i/d+'" stroke="#1f3a5f" stroke-width="2"/>':'<line x1="0" x2="200" y1="'+H*i/d+'" y2="'+H*i/d+'" stroke="#1f3a5f" stroke-width="2"/>';
+ return s+'<rect x="1" y="1" width="198" height="98" fill="none" stroke="#1f3a5f" stroke-width="2"/></svg>'}
+function lab(f,k){return st<3?F(f.n,f.d):F(f.n,f.d)+'<span class="x">×'+k+'<br>×'+k+'</span>= '+F(f.n*k,f.d*k)}
+function addviz(m,a,b){var P=a.d*b.d,p=a.n*b.d,q=b.n*a.d,sg=SYM[m],r=m=='add'?p+q:p-q,ad=m=='add';
+ var t=['Gambar kedua pecahan. Potongannya belum sama besar, jadi belum bisa langsung '+(ad?'dijumlahkan':m=='sub'?'dikurangkan':'dibagi')+'.','Potong lagi: gambar kiri menjadi '+b.d+' baris, gambar kanan menjadi '+a.d+' kolom. Sekarang keduanya punya '+P+' potongan sama besar.','Tulis pecahan senilai: kalikan pembilang dan penyebut dengan angka yang sama (merah).',(m=='div'?'Potongan sudah sama besar, tinggal bandingkan banyaknya: '+p+' ÷ '+q+' = '+p+'/'+q+' kelompok.':(ad?'Jumlahkan':'Kurangkan')+' potongan yang diarsir: '+p+' '+sg+' '+q+' = '+r+' dari '+P+' potongan.')];
+ var h='<div class="viz"><div class="pics"><div>'+pic('c',a.d,a.n,b.d,st>1,'#29b6f6')+'</div><b class="op">'+sg+'</b><div>'+pic('r',b.d,b.n,a.d,st>1,'#7e57c2')+'</div></div>'
+  +'<div class="pics lb"><div>'+lab(a,b.d)+'</div><b class="op" style="visibility:hidden">'+sg+'</b><div>'+lab(b,a.d)+'</div></div>';
+ if(st==4){var kk=g(Math.abs(r),P)||1;h+='<div class="eq">'+F(p,P)+sg+F(q,P)+(m=='div'?'= '+p+' ÷ '+q+' = '+F(p/g(p,q),q/g(p,q)):'= '+F(r,P)+(kk>1?' = '+F(r/kk,P/kk):''))+'</div>'+(m=='div'?cap('Kelompokkan '+p+' potongan yang diarsir (kiri) menjadi kelompok berisi '+q+' potongan (ukuran gambar kanan):')+row(P,function(k){return k<=p?(Math.ceil(k/q)%2?'#29b6f6':'#fb8c00'):''}):'')}
+ h+=cap('<b>Langkah '+st+'/4.</b> '+t[st-1])+'<div class="nav"><button onclick="setSt('+Math.max(1,st-1)+')">◀ Sebelumnya</button><button onclick="setSt('+Math.min(4,st+1)+')">Berikutnya ▶</button><button onclick="setSt(1)">↺ Mulai lagi</button></div></div>';return h}
+function viz(m,a,b,L,x,y){if(m!='mul')return addviz(m,a,b);var A='#2f80ed',O='#fb8c00',R='#e53935',P='#8e24aa',h='<div class="viz">';
+ if(m=='add'){h+=cap(F(a.n,a.d)+' (biru) + '+F(b.n,b.d)+' (oranye)')+row(a.d,function(k){return k<=a.n?A:''})+row(b.d,function(k){return k<=b.n?O:''})
+  +cap('Dipotong sama besar menjadi '+L+' bagian, lalu digabung:')+row(L,function(k){return k<=x?A:k<=x+y?O:''});
+  if(x+y>L)h+=row(L,function(k){return k<=x+y-L?O:''})}
+ else if(m=='sub'){var r=Math.min(x,y);h+=cap('Mulai dari '+F(a.n,a.d)+' = '+x+' dari '+L+' bagian')+row(L,function(k){return k<=x?A:''})
+  +cap('Ambil '+F(b.n,b.d)+' = '+y+' bagian (merah dicoret):')+row(L,function(k){return k<=x-r?A:k<=x?R:''})
+  +cap(y>x?'Bagian yang diambil lebih banyak dari yang ada, hasilnya negatif.':'Sisa yang biru = hasil pengurangan.')}
+ else if(m=='mul'){h+=cap(F(a.n,a.d)+' (biru, baris) × '+F(b.n,b.d)+' (oranye, kolom). Ungu = hasil perkalian')+'<div class="gr" style="grid-template-columns:repeat('+b.d+',1fr)">';
+  for(var i=0;i<a.d;i++)for(var j=0;j<b.d;j++){var u=i>=a.d-a.n,v=j<b.n;h+='<i style="background:'+(u&&v?P:u?A+'88':v?O+'88':'')+'"></i>'}
+  h+='</div>'+cap(a.n*b.n+' kotak ungu dari '+a.d*b.d+' kotak = '+F(a.n*b.n,a.d*b.d))}
+ else{var kk=g(x,y)||1;h+=cap(F(a.n,a.d)+' = '+x+' bagian dari '+L+'. Kelompokkan tiap '+y+' bagian (= '+F(b.n,b.d)+'), warna selang-seling:')
+  +row(L,function(k){return k<=x?(Math.ceil(k/y)%2?A:O):''})+cap('Banyak kelompok = '+x+' ÷ '+y+' = '+F(x/kk,y/kk))}
+ return h+'</div>'}
+function pie(d,n){var s='<svg viewBox="-55 -55 110 110" style="width:150px;display:block;margin:auto"><circle r="50" fill="#fff"/>';
+ for(var i=0;i<d;i++){var a1=2*Math.PI*i/d-Math.PI/2,a2=2*Math.PI*(i+1)/d-Math.PI/2,c=i<n?'#29b6f6':'#fff';
+  s+=d==1?'<circle r="50" fill="'+c+'" stroke="#1f3a5f" stroke-width="2"/>':'<path d="M0 0L'+50*Math.cos(a1)+' '+50*Math.sin(a1)+'A50 50 0 0 1 '+50*Math.cos(a2)+' '+50*Math.sin(a2)+'Z" fill="'+c+'" stroke="#1f3a5f" stroke-width="2"/>'}
+ return s+'</svg>'}
+function intro(f){if(!f.d)return '<p>Isi pecahan di kolom atas atau klik balok di palet.</p>';
+ var P='<b style="color:#2f80ed">',O='<b style="color:#fb8c00">',E='</b>',kind=f.n==0?'tidak ada bagian yang diarsir':f.n<f.d?'pecahan murni (nilainya kurang dari 1 utuh)':'sama dengan 1 utuh';
+ return '<div class="viz">'+pie(f.d,f.n)+cap('Lingkaran dan batang di atas menunjukkan pecahan yang sama.')+'</div>'
+ +'<p>Sebuah benda utuh dibagi menjadi '+O+f.d+E+' bagian yang sama besar. Itulah <u>penyebut</u> (angka bawah).</p>'
+ +'<p>Dari bagian itu, '+P+f.n+E+' bagian diarsir. Itulah <u>pembilang</u> (angka atas).</p>'
+ +'<p style="text-align:center;font-size:1.2rem"><span style="color:#2f80ed">'+f.n+'</span> per <span style="color:#fb8c00">'+f.d+'</span> = '+F(f.n,f.d)+'</p>'
+ +'<p>Dibaca "'+f.n+' per '+f.d+'" atau '+f.n+' dari '+f.d+' bagian. Ini '+kind+'.</p>'}
+var mm=document.getElementById('modal'),mn=document.getElementById('menu');
+Object.keys(NAME).forEach(function(k){var b=document.createElement('button');b.textContent=NAME[k];b.onclick=function(){mode=k;st=1;act=0;guess=null;mm.classList.remove('open');render()};mn.appendChild(b)});
+document.getElementById('mat').onclick=function(){mm.classList.add('open')};
+mm.onclick=function(e){if(e.target===mm)mm.classList.remove('open')};
+mm.classList.add('open');
+window.onresize=render;render();
+</script></body></html>
