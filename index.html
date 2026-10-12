@@ -78,12 +78,13 @@ h1{margin:.4rem 8px 0}.sub{margin:0 8px .3rem;font-size:.85rem}
 .fi input{width:5.5rem}.fi input::placeholder{font-size:.7rem;font-weight:400}
 @media (min-width:700px){.ops:has(#mat){position:absolute;top:.6rem;right:.8rem;margin:0}.hint{display:none}.app{margin:.3rem auto}}
 @media (min-width:900px) and (min-aspect-ratio:5/4){
- .stage{display:grid;grid-template-columns:auto auto;justify-content:center;column-gap:1.5rem;align-items:start}
+ .stage{display:grid;grid-template-columns:auto auto;justify-content:center;column-gap:0;align-items:start}.stage.hr{column-gap:1.5rem}
  .stage>.cols{grid-column:1;grid-row:1}.stage>#cmpops{grid-column:1;grid-row:2}.stage>.msg{grid-column:1;grid-row:3}.stage>.ops:last-child{grid-column:1;grid-row:4}
  .stage>.res{grid-column:2;grid-row:1/span 4;margin:0;width:min(34rem,38vw);max-height:calc(100vh - 9rem);overflow:auto;font-size:.9rem}
 }
 #mus{position:fixed;right:.8rem;bottom:calc(.8rem + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:.5rem;background:var(--card);border:1px solid var(--mut);border-radius:2rem;padding:.2rem .7rem;z-index:5}
 #mus button{border:0;background:none;font-size:1.4rem;padding:0 .2rem;min-height:2.4rem}#mus input{width:6rem}
+.res{animation:rin .35s ease}@keyframes rin{from{opacity:0;transform:translateX(1rem)}to{opacity:1;transform:none}}
 </style></head><body>
 <h1 id="ttl">Membandingkan Pecahan</h1><div class="ops"><button id="mat">📚 Pilih materi</button></div>
 <p class="sub">Pilih batang (kiri/kanan), lalu klik balok pecahan di samping untuk mengisinya.</p>
@@ -115,7 +116,7 @@ h1{margin:.4rem 8px 0}.sub{margin:0 8px .3rem;font-size:.85rem}
 <script>
 var D=[[1,'1','#e53935'],[2,'½','#ec4f8a'],[3,'⅓','#fb8c00'],[4,'¼','#fdd835'],[5,'⅕','#43a047'],[6,'⅙','#1e88e5'],[8,'⅛','#3949ab'],[10,'1/10','#8e24aa'],[12,'1/12','#555']];
 var col={7:'#00897b',9:'#6d4c41',11:'#c0792b'};D.forEach(function(d){col[d[0]]=d[2]});
-var B=[{d:4,n:3},{d:0,n:0}],act=0,guess=null,line=false;
+var B=[{d:0,n:0},{d:0,n:0}],act=0,guess=null,line=false;
 var pal=document.getElementById('pal');
 D.forEach(function(d){var b=document.createElement('button');b.style.background=d[2];if(d[0]==4)b.style.color='#111';
  b.innerHTML=d[0]==1?'1':'1/'+d[0];b.onclick=function(){add(d[0])};pal.appendChild(b)});
@@ -157,7 +158,7 @@ function render(){syncInp();
   var y0=H*(1-B[0].n/B[0].d)+2,y1=H*(1-B[1].n/B[1].d)+2;
   var W=document.querySelector('.mid').offsetWidth;s.innerHTML='<line x1="0" y1="'+y0+'" x2="'+W+'" y2="'+y1+'" stroke="currentColor" stroke-width="2.5"/><circle cx="0" cy="'+y0+'" r="5" fill="#2f80ed"/><circle cx="'+W+'" cy="'+y1+'" r="5" fill="#2f80ed"/>';
   s.style.color='var(--line)'}
- document.getElementById('gar').className=line?'on':'';opsView();
+ document.getElementById('gar').className=line?'on':'';opsView();document.querySelector('.stage').classList.toggle('hr',getComputedStyle(document.getElementById('res')).display!=='none');
 }
 var mode='intro',SYM={add:'+',sub:'−',mul:'×',div:'÷'},NAME={intro:'Pengenalan Pecahan',cmp:'Membandingkan Pecahan',add:'Penjumlahan Pecahan',sub:'Pengurangan Pecahan',mul:'Perkalian Pecahan',div:'Pembagian Pecahan'};
 function g(a,b){return b?g(b,a%b):a}
@@ -168,10 +169,10 @@ function opsView(){var cm=mode=='cmp',a=B[0],b=B[1],res=document.getElementById(
  document.getElementById('cmpops').style.display=cm?'':'none';document.getElementById('gar').style.display=cm?'':'none';
  res.style.display=cm?'none':'';
  var it=mode=='intro';document.getElementById('c1').style.display=it?'none':'';document.querySelector('.mid').style.display=it?'none':'';var ii=document.querySelectorAll('.inputs>*');ii[1].style.display=ii[2].style.display=it?'none':'';
- if(it){act=0;res.innerHTML=intro(B[0]);return}
+ if(it){act=0;res.innerHTML=intro(B[0]);res.style.display=B[0].d?'':'none';return}
  if(cm)return;
  document.getElementById('circ').textContent=SYM[mode];document.getElementById('msg').textContent='';document.getElementById('ln').innerHTML='';
- if(!a.d||!b.d){res.innerHTML='<p>Isi kedua pecahan untuk melihat langkah penyelesaian.</p>';return}
+ if(!a.d||!b.d){res.style.display='none';return}
  var n,d,h='',s=SYM[mode];var L=a.d*b.d/g(a.d,b.d),x=a.n*L/a.d,y=b.n*L/b.d;
  if(mode=='add'||mode=='sub'){var L=a.d*b.d/g(a.d,b.d),x=a.n*L/a.d,y=b.n*L/b.d;n=mode=='add'?x+y:x-y;d=L;
   h+='<p>1. Samakan penyebut (KPK '+a.d+' dan '+b.d+' = '+L+'): '+F(a.n,a.d)+'='+F(x,L)+' dan '+F(b.n,b.d)+'='+F(y,L)+'</p><p>2. '+(mode=='add'?'Jumlahkan':'Kurangkan')+' pembilang: '+F(x,L)+s+F(y,L)+'='+F(n,L)+'</p>'}
