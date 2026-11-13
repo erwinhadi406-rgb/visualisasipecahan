@@ -85,6 +85,18 @@ h1{margin:.4rem 8px 0}.sub{margin:0 8px .3rem;font-size:.85rem}
 #mus{position:fixed;right:.8rem;bottom:calc(.8rem + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:.5rem;background:var(--card);border:1px solid var(--mut);border-radius:2rem;padding:.2rem .7rem;z-index:5}
 #mus button{border:0;background:none;font-size:1.4rem;padding:0 .2rem;min-height:2.4rem}#mus input{width:6rem}
 .res{animation:rin .35s ease}@keyframes rin{from{opacity:0;transform:translateX(1rem)}to{opacity:1;transform:none}}
+.nlw svg{width:100%;height:auto;display:block}.viz input[type=range]{width:100%;min-height:2rem;margin-top:.4rem}
+.ddw{padding:0 1.2rem}.dpalw{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;margin:.3rem 0 .8rem}
+.dpal,.dgh{width:3.3rem;height:2.4rem;display:flex;align-items:center;justify-content:center;border-radius:.4rem;color:#fff;font-weight:700;font-size:.85rem}
+.dpal{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.dgh{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-50%);opacity:.9;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.ddrow{display:flex;height:2.6rem;margin-top:.3rem;border-radius:.3rem}.ddrow.emp{border:2px dashed var(--mut)}.ddrow.hot{outline:3px solid var(--blue);background:rgba(47,128,237,.12)}
+.hintx{margin:auto;color:var(--mut);font-size:.75rem;text-align:center;padding:0 .3rem}
+.db{flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.7rem;border:1px solid rgba(0,0,0,.35);overflow:hidden;cursor:pointer;touch-action:manipulation;user-select:none}
+.ax{position:relative;height:3rem;border-top:3px solid var(--fg);margin-top:.5rem}
+.tk{position:absolute;top:-.4rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font-size:.7rem;line-height:1.05}.tk u{width:2px;height:.7rem;background:var(--fg)}.tk b{margin-top:.1rem}
+.fq i{display:block;font-style:normal;text-align:center}.fq i+i{border-top:1.5px solid var(--fg)}
+.trk{position:relative}.gd{position:absolute;top:0;height:5.8rem;border-left:2px dashed #e53935;pointer-events:none;z-index:2}
 </style></head><body>
 <h1 id="ttl">Membandingkan Pecahan</h1><div class="ops"><button id="mat">📚 Pilih materi</button></div>
 <p class="sub">Pilih batang (kiri/kanan), lalu klik balok pecahan di samping untuk mengisinya.</p>
@@ -178,7 +190,7 @@ function opsView(){var cm=mode=='cmp',a=B[0],b=B[1],res=document.getElementById(
   h+='<p>1. Samakan penyebut (KPK '+a.d+' dan '+b.d+' = '+L+'): '+F(a.n,a.d)+'='+F(x,L)+' dan '+F(b.n,b.d)+'='+F(y,L)+'</p><p>2. '+(mode=='add'?'Jumlahkan':'Kurangkan')+' pembilang: '+F(x,L)+s+F(y,L)+'='+F(n,L)+'</p>'}
  else if(mode=='mul'){n=a.n*b.n;d=a.d*b.d;h+='<p>1. Kalikan pembilang dan penyebut: '+F(a.n,a.d)+'×'+F(b.n,b.d)+'='+F(n,d)+'</p>'}
  else{if(!b.n){res.innerHTML='<p class="no">Tidak bisa dibagi dengan 0.</p>';return}n=a.n*b.d;d=a.d*b.n;h+='<p>1. Balik pecahan kedua, lalu kalikan: '+F(a.n,a.d)+'×'+F(b.d,b.n)+'='+F(n,d)+'</p>'}
- h=viz(mode,a,b,L,x,y)+h;var k=g(Math.abs(n),d)||1,sn=n/k,sd=d/k;
+ if((mode=='add'||mode=='sub')&&vz=='dd'){res.innerHTML=viz(mode,a,b,L,x,y);return}h=viz(mode,a,b,L,x,y)+h;var k=g(Math.abs(n),d)||1,sn=n/k,sd=d/k;
  h+='<p><b>Hasil:</b> '+F(sn,sd)+(k>1?' (disederhanakan dari '+F(n,d)+')':'')+(n>=0&&sd>1&&sn>sd?' = '+Math.floor(sn/sd)+' '+F(sn%sd,sd):'')+'</p>';
  if(n<0)h+='<p class="no">Hasil negatif karena pecahan pertama lebih kecil dari pecahan kedua.</p>';else h+=strips(sn,sd);
  res.innerHTML=h}
@@ -193,11 +205,11 @@ function pic(o,d,n,m,sp,c){var W=200,H=100,s='<svg viewBox="0 0 200 100" style="
 function lab(f,k){return st<3?F(f.n,f.d):F(f.n,f.d)+'<span class="x">×'+k+'<br>×'+k+'</span>= '+F(f.n*k,f.d*k)}
 function addviz(m,a,b){var P=a.d*b.d,p=a.n*b.d,q=b.n*a.d,sg=SYM[m],r=m=='add'?p+q:p-q,ad=m=='add';
  var t=['Gambar kedua pecahan. Potongannya belum sama besar, jadi belum bisa langsung '+(ad?'dijumlahkan':m=='sub'?'dikurangkan':'dibagi')+'.','Potong lagi: gambar kiri menjadi '+b.d+' baris, gambar kanan menjadi '+a.d+' kolom. Sekarang keduanya punya '+P+' potongan sama besar.','Tulis pecahan senilai: kalikan pembilang dan penyebut dengan angka yang sama (merah).',(m=='div'?'Potongan sudah sama besar, tinggal bandingkan banyaknya: '+p+' ÷ '+q+' = '+p+'/'+q+' kelompok.':(ad?'Jumlahkan':'Kurangkan')+' potongan yang diarsir: '+p+' '+sg+' '+q+' = '+r+' dari '+P+' potongan.')];
- var h='<div class="viz"><div class="pics"><div>'+pic('c',a.d,a.n,b.d,st>1,'#29b6f6')+'</div><b class="op">'+sg+'</b><div>'+pic('r',b.d,b.n,a.d,st>1,'#7e57c2')+'</div></div>'
+ var h='<div class="viz">'+tgl(m)+'<div class="pics"><div>'+pic('c',a.d,a.n,b.d,st>1,'#29b6f6')+'</div><b class="op">'+sg+'</b><div>'+pic('r',b.d,b.n,a.d,st>1,'#7e57c2')+'</div></div>'
   +'<div class="pics lb"><div>'+lab(a,b.d)+'</div><b class="op" style="visibility:hidden">'+sg+'</b><div>'+lab(b,a.d)+'</div></div>';
  if(st==4){var kk=g(Math.abs(r),P)||1;h+='<div class="eq">'+F(p,P)+sg+F(q,P)+(m=='div'?'= '+p+' ÷ '+q+' = '+F(p/g(p,q),q/g(p,q)):'= '+F(r,P)+(kk>1?' = '+F(r/kk,P/kk):''))+'</div>'+(m=='div'?cap('Kelompokkan '+p+' potongan yang diarsir (kiri) menjadi kelompok berisi '+q+' potongan (ukuran gambar kanan):')+row(P,function(k){return k<=p?(Math.ceil(k/q)%2?'#29b6f6':'#fb8c00'):''}):'')}
  h+=cap('<b>Langkah '+st+'/4.</b> '+t[st-1])+'<div class="nav"><button onclick="setSt('+Math.max(1,st-1)+')">◀ Sebelumnya</button><button onclick="setSt('+Math.min(4,st+1)+')">Berikutnya ▶</button><button onclick="setSt(1)">↺ Mulai lagi</button></div></div>';return h}
-function viz(m,a,b,L,x,y){if(m!='mul')return addviz(m,a,b);var A='#2f80ed',O='#fb8c00',R='#e53935',P='#8e24aa',h='<div class="viz">';
+function viz(m,a,b,L,x,y){if((m=='add'||m=='sub')&&vz=='dd')return ddviz(m,a,b);if((m=='add'||m=='sub')&&vz=='nl')return nlviz(m,a,b);if(m!='mul')return addviz(m,a,b);var A='#2f80ed',O='#fb8c00',R='#e53935',P='#8e24aa',h='<div class="viz">';
  if(m=='add'){h+=cap(F(a.n,a.d)+' (biru) + '+F(b.n,b.d)+' (oranye)')+row(a.d,function(k){return k<=a.n?A:''})+row(b.d,function(k){return k<=b.n?O:''})
   +cap('Dipotong sama besar menjadi '+L+' bagian, lalu digabung:')+row(L,function(k){return k<=x?A:k<=x+y?O:''});
   if(x+y>L)h+=row(L,function(k){return k<=x+y-L?O:''})}
@@ -210,6 +222,108 @@ function viz(m,a,b,L,x,y){if(m!='mul')return addviz(m,a,b);var A='#2f80ed',O='#f
  else{var kk=g(x,y)||1;h+=cap(F(a.n,a.d)+' = '+x+' bagian dari '+L+'. Kelompokkan tiap '+y+' bagian (= '+F(b.n,b.d)+'), warna selang-seling:')
   +row(L,function(k){return k<=x?(Math.ceil(k/y)%2?A:O):''})+cap('Banyak kelompok = '+x+' ÷ '+y+' = '+F(x/kk,y/kk))}
  return h+'</div>'}
+var vz='dd',ns=1,nv=0,NL=null,nlT=null;
+function colL(L){return col[L]||'#0097a7'}
+function setVz(v){sfx([500]);vz=v;clearInterval(nlT);opsView()}
+function tgl(m){return m=='add'||m=='sub'?'<div class="nav" style="margin:0 0 6px"><button class="'+(vz=='nl'?'on':'')+'" onclick="setVz(\'nl\')">📏 Garis bilangan</button><button class="'+(vz=='bx'?'on':'')+'" onclick="setVz(\'bx\')">▦ Kotak</button><button class="'+(vz=='dd'?'on':'')+'" onclick="setVz(\'dd\')">🧩 Seret blok</button></div>':''}
+function setNs(k){if(k!=ns)sfx(k==4?[523,659,784,1047]:k>ns?[400+k*60]:[560-k*40]);ns=k;clearInterval(nlT);if(k==3)nv=0;opsView();if(k==3&&NL&&NL.NU>0)nlPlay()}
+function nlDraw(){var e=document.getElementById('nlw');if(e&&NL)e.innerHTML=nlSvg()}
+function nlSl(v){clearInterval(nlT);nv=+v;nlDraw()}
+function nlPlay(){clearInterval(nlT);nv=0;nlDraw();var N=NL.NU;nlT=setInterval(function(){var s=document.getElementById('nlsl');if(!NL||ns!=3||!s){clearInterval(nlT);return}nv++;s.value=nv;nlDraw();if(N<=30)sfx([500+nv*30],'triangle');if(nv>=NL.NU)clearInterval(nlT)},Math.max(25,Math.min(400,2600/N)))}
+function nlviz(m,a,b){var ad=m=='add',sg=SYM[m],L=a.d*b.d/g(a.d,b.d),x=a.n*L/a.d,y=b.n*L/b.d,h='<div class="viz">'+tgl(m);
+ if(!ad&&y>x)return h+cap('Pecahan kedua lebih besar daripada pecahan pertama, jadi hasilnya negatif. Coba tukar urutannya.')+'</div>';
+ var NU=ad?x+y:x,r=ad?x+y:x-y,k=g(r,L)||1,sn=r/k,sd=L/k,mx=ad?Math.max(1,Math.ceil(NU/L)):1;
+ NL={m:m,a:a,b:b,L:L,x:x,y:y,NU:NU,LU:L*mx,mx:mx,lab:r==0?'0':sn+'/'+sd};
+ if(ns==4)nv=NU;else if(ns==3)nv=Math.min(nv,NU);
+ var t=ad?['Letakkan '+F(a.n,a.d)+' di garis bilangan, lalu sambung dengan '+F(b.n,b.d)+'. Potongannya belum sama besar, jadi belum bisa dijumlahkan.',
+  'Cari penyebut yang sama: KPK dari '+a.d+' dan '+b.d+' adalah '+L+'. Susun potongan '+F(1,L)+' sebanyak '+NU+' buah untuk menutupi kedua pecahan.',
+  'Geser penggeser untuk menandai tiap potongan '+F(1,L)+' pada garis bilangan.',
+  'Semua potongan sudah sama besar: '+F(x,L)+' + '+F(y,L)+' = '+F(r,L)+(k>1?' = '+F(sn,sd):'')+'.']
+ :['Letakkan '+F(a.n,a.d)+' di garis bilangan. '+F(b.n,b.d)+' yang dikurangkan diambil dari ujung kanan ke arah kiri (garis putus-putus).',
+  'Cari penyebut yang sama: KPK dari '+a.d+' dan '+b.d+' adalah '+L+'. '+F(a.n,a.d)+' = '+x+' potongan '+F(1,L)+'; '+y+' di antaranya (merah) diambil.',
+  'Geser penggeser untuk menandai tiap potongan '+F(1,L)+' pada garis bilangan.',
+  'Sisa potongan biru: '+F(x,L)+' − '+F(y,L)+' = '+F(r,L)+(k>1&&r>0?' = '+F(sn,sd):'')+'.'];
+ var res=ns==4?'<span style="color:#2f80ed">'+(r==0?'0':F(sn,sd))+'</span>':'<span class="fr" style="opacity:.4"><b>&nbsp;&nbsp;&nbsp;</b><b>&nbsp;&nbsp;&nbsp;</b></span>';
+ h+='<div class="eq">'+F(a.n,a.d)+' '+sg+' '+F(b.n,b.d)+' = '+res+'</div><div class="nlw" id="nlw">'+nlSvg()+'</div>';
+ if(ns==3)h+='<input type="range" id="nlsl" min="0" max="'+NU+'" value="'+nv+'" oninput="nlSl(this.value)" aria-label="Geser untuk menandai potongan">';
+ return h+cap('<b>Langkah '+ns+'/4.</b> '+t[ns-1])+'<div class="nav"><button onclick="setNs('+Math.max(1,ns-1)+')">◀ Sebelumnya</button><button onclick="setNs('+Math.min(4,ns+1)+')">Berikutnya ▶</button><button onclick="setNs(1)">↺ Mulai lagi</button></div></div>'}
+function nlSvg(){var N=NL,L=N.L,LU=N.LU,a=N.a,b=N.b,x=N.x,y=N.y,NU=N.NU,ad=N.m=='add',X0=30,W=540,Y=210,U=W/LU,s,i,u;
+ function px(v){return X0+W*v/LU}
+ function pcs(s0,cnt,per,d,yy,dash){var o='',c=col[d]||'#0097a7';for(var i=0;i<cnt;i++){var x1=px(s0+i*per),w=px(s0+(i+1)*per)-x1;o+='<rect x="'+x1+'" y="'+yy+'" width="'+w+'" height="40" fill="'+c+'" fill-opacity=".4" stroke="'+c+'" stroke-width="2"'+(dash?' stroke-dasharray="5 3"':'')+'/>';if(w>=26)o+='<text x="'+(x1+w/2)+'" y="'+(yy+25)+'" text-anchor="middle" font-size="'+Math.min(14,w/2.6)+'" font-weight="700" fill="currentColor">1/'+d+'</text>'}return o}
+ s='<svg viewBox="0 0 600 250" style="width:100%;height:auto;display:block;color:var(--fg)" role="img" aria-label="Garis bilangan pecahan">';
+ s+=pcs(0,a.n,L/a.d,a.d,Y-40,0);
+ if(ad)s+=pcs(x,b.n,L/b.d,b.d,Y-40,0);else if(ns==1)s+=pcs(x-y,b.n,L/b.d,b.d,Y-84,1);
+ if(ns>=2){var cl=colL(L);for(u=0;u<NU;u++){var sh=ns!=3||u<nv,x1=px(u),w=px(u+1)-x1,c=(!ad&&u>=x-y)?'#e53935':cl;
+  s+=sh?'<rect x="'+x1+'" y="'+(Y-84)+'" width="'+w+'" height="40" fill="'+c+'" fill-opacity=".55" stroke="currentColor" stroke-opacity=".5"/>':'<rect x="'+x1+'" y="'+(Y-84)+'" width="'+w+'" height="40" fill="none" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="3 3"/>';
+  if(sh&&w>=24)s+='<text x="'+(x1+w/2)+'" y="'+(Y-59)+'" text-anchor="middle" font-size="'+Math.min(13,w/2.6)+'" font-weight="700" fill="currentColor">1/'+L+'</text>'}}
+ s+='<line x1="12" y1="'+Y+'" x2="588" y2="'+Y+'" stroke="currentColor" stroke-width="2.5"/><path d="M588 '+(Y-6)+'L598 '+Y+'L588 '+(Y+6)+'Z" fill="currentColor"/><path d="M12 '+(Y-6)+'L2 '+Y+'L12 '+(Y+6)+'Z" fill="currentColor"/>';
+ for(i=0;i<=N.mx;i++)s+='<line x1="'+px(i*L)+'" x2="'+px(i*L)+'" y1="'+(Y-7)+'" y2="'+(Y+7)+'" stroke="currentColor" stroke-width="2.5"/><text x="'+px(i*L)+'" y="'+(Y+26)+'" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">'+i+'</text>';
+ if(ns>=3){var K=ns==4?NU:nv,sd=U>=26?1:U>=13?2:Math.ceil(26/U);
+  for(i=0;i<=K;i++){var X=px(i);s+='<line x1="'+X+'" x2="'+X+'" y1="'+(Y-5)+'" y2="'+(Y+5)+'" stroke="currentColor" stroke-width="1.5"/>';
+   if(i%L&&i%sd==0)s+='<g font-size="11" text-anchor="middle" fill="currentColor"><text x="'+X+'" y="'+(Y+21)+'">'+i+'</text><line x1="'+(X-8)+'" x2="'+(X+8)+'" y1="'+(Y+24)+'" y2="'+(Y+24)+'" stroke="currentColor"/><text x="'+X+'" y="'+(Y+36)+'">'+L+'</text></g>'}}
+ if(ns==3)s+='<text x="30" y="24" font-size="14" fill="currentColor">Ditandai: '+nv+' dari '+NU+' potongan 1/'+L+'</text>';
+ if(ns==2){var rx=Math.max(8,Math.min(392,px(x)-100)),cx=Math.max(rx+14,Math.min(rx+186,px(x)));
+  s+='<rect x="'+rx+'" y="30" width="200" height="50" rx="10" fill="#f59e0b"/><polygon points="'+(cx-9)+',80 '+(cx+9)+',80 '+cx+',98" fill="#f59e0b"/><text x="'+(rx+100)+'" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2937">Cari penyebut sama</text><text x="'+(rx+100)+'" y="70" text-anchor="middle" font-size="13" fill="#1f2937">KPK('+a.d+', '+b.d+') = '+L+'</text>'}
+ if(ns==4){var len=ad?NU:x-y;if(len>0){var x1=px(0),x2=px(len);s+='<path d="M'+x1+' 120V112H'+x2+'V120" fill="none" stroke="#2f80ed" stroke-width="3"/><text x="'+((x1+x2)/2)+'" y="100" text-anchor="middle" font-size="22" font-weight="700" fill="#2f80ed">'+N.lab+'</text>'}else s+='<text x="'+px(0)+'" y="100" text-anchor="middle" font-size="22" font-weight="700" fill="#2f80ed">0</text>'}
+ return s+'</svg>'}
+var DD={k:'',r1:[],r2:[],tk:[],note:'',won:0},Q=27720;
+function sm(l){var t=0;l.forEach(function(d){t+=Q/d});return t}
+function ddI(){var a=B[0],b=B[1],ad=mode=='add',A=a.n*Q/a.d,Bv=b.n*Q/b.d,T=ad?A+Bv:A,s1=sm(DD.r1),s2=sm(DD.r2),d2=DD.r2[0]||0,p=0,bd=A==0;
+ var bs=[];DD.r1.forEach(function(d){p+=Q/d;bs.push(p);if(p==A)bd=true});
+ var ok1=T>0&&s1==T&&(ad?bd:true),ok2=ok1&&s2==T&&d2>0&&bs.every(function(q){return q%(Q/d2)==0})&&(ad||d2%b.d==0),y2=ok2&&!ad?b.n*d2/b.d:0,n2=DD.r2.length;
+ return {bs:bs,a:a,b:b,ad:ad,A:A,Bv:Bv,T:T,s1:s1,s2:s2,d2:d2,ok1:ok1,ok2:ok2,y2:y2,n2:n2,done:ok2&&(ad||DD.tk.length==y2),r:ad?n2:n2-y2}}
+function ddEq(){var o=ddI(),h=F(o.a.n,o.a.d)+' '+SYM[mode]+' '+F(o.b.n,o.b.d)+' = ';
+ if(o.done){var k=g(o.r,o.d2)||1;return h+'<span style="color:#2f80ed">'+(o.r==0?'0':F(o.r/k,o.d2/k))+'</span>'}
+ return h+'<span class="fr" style="opacity:.4"><b>&nbsp;&nbsp;&nbsp;</b><b>&nbsp;&nbsp;&nbsp;</b></span>'}
+function ddMsg(){var o=ddI(),a=o.a,b=o.b,t;
+ if(DD.note)return [DD.note,'no'];
+ if(!o.ok1){if(!o.s1)t='Seret blok ke baris bawah untuk menyusun '+F(a.n,a.d)+(o.ad?' lalu '+F(b.n,b.d):'')+'.';
+  else if(o.s1<o.T)t='Bagus! Tambah blok lagi sampai '+(o.ad?'kedua pecahan ('+F(a.n,a.d)+' dan '+F(b.n,b.d)+') ':F(a.n,a.d)+' ')+'tersusun.';
+  else t=o.ad?'Panjangnya sudah pas, tetapi susun '+F(a.n,a.d)+' dulu, baru '+F(b.n,b.d)+'.':'Panjangnya belum sesuai dengan '+F(a.n,a.d)+'.';
+  return [t,'']}
+ if(!o.ok2){if(!o.s2)t='Sekarang samakan penyebutnya. Seret blok kecil yang sama besar ke baris atas sampai sepanjang yang di bawah.';
+  else if(o.s2<o.T)t='Tambah lagi blok yang sama besar ke baris atas.';
+  else t=o.bs.some(function(q){return q%(Q/o.d2)})?'Panjangnya sudah sama, tetapi garis merah putus-putus memotong blok 1/'+o.d2+' di atas. Semua batas potongan di bawah harus jatuh tepat di batas blok atas. Coba blok yang lebih kecil.':'Blok 1/'+o.d2+' belum bisa dipakai untuk mengambil '+F(b.n,b.d)+'. Coba blok yang lebih kecil.';
+  return [t,'']}
+ if(!o.ad&&DD.tk.length!=o.y2)return ['Ketuk '+o.y2+' blok di baris atas untuk diambil ('+F(b.n,b.d)+' = '+F(o.y2,o.d2)+'). Blok yang diambil jadi merah.',''];
+ return o.ad?['Benar! '+F(o.A*o.d2/Q,o.d2)+' + '+F(o.Bv*o.d2/Q,o.d2)+' = '+F(o.r,o.d2)+'. Ada '+o.r+' blok 1/'+o.d2+'.','ok']:['Benar! Sisa '+o.r+' blok 1/'+o.d2+' = '+F(o.r,o.d2)+'.','ok']}
+function ddBody(){var o=ddI(),mx=Math.max(1,Math.ceil(Math.max(o.T,o.s1,o.s2)/Q)),i,k;
+ var cutOn=o.ok1&&!o.ok2&&DD.r2.length>0;function cutAt(i,d){var s0=i*Q/d,e=s0+Q/d;return cutOn&&o.bs.some(function(q){return q>s0&&q<e})}
+ function row(r,l){var h='<div class="ddrow'+(l.length?'':' emp')+'" data-r="'+r+'">';l.forEach(function(d,i){var w=100/(d*mx),tk=r==2&&!o.ad&&o.ok2&&DD.tk.indexOf(i)>=0;
+  h+='<div class="db" data-r="'+r+'" data-i="'+i+'" style="width:'+w+'%;background:'+(tk?'#e53935':col[d]||'#0097a7')+(d==4&&!tk?';color:#111':'')+(r==2&&cutAt(i,d)?';outline:3px solid #e53935;outline-offset:-3px':'')+'" title="1/'+d+'">'+(w>6?'1/'+d:'')+'</div>'});
+  if(!l.length)h+='<span class="hintx">'+(r==1?'Seret blok ke sini untuk menyusun pecahan':'Seret blok kecil yang sama besar ke sini')+'</span>';return h+'</div>'}
+ var ax='';for(i=0;i<=mx;i++)ax+='<span class="tk" style="left:'+100*i/mx+'%"><u></u><b>'+i+'</b></span>';
+ if(DD.r2.length){var d2=DD.r2[0],st=DD.r2.length>12?2:1;for(k=1;k<=DD.r2.length;k++)if(k%d2&&k%st==0)ax+='<span class="tk" style="left:'+100*k/(d2*mx)+'%"><u></u><b class="fq"><i>'+k+'</i><i>'+d2+'</i></b></span>'}
+ var gd='';if(cutOn)o.bs.forEach(function(q){if(q<o.T)gd+='<span class="gd" style="left:'+100*q/(Q*mx)+'%"></span>'});
+ return '<div class="ddw"><div class="trk">'+gd+row(2,DD.r2)+row(1,DD.r1)+'<div class="ax">'+ax+'</div></div></div>'}
+function ddRefresh(){var e=document.getElementById('ddb');if(!e)return;e.innerHTML=ddBody();document.getElementById('dde').innerHTML=ddEq();var m=ddMsg(),x=document.getElementById('ddm'),o=ddI();x.className='msg '+m[1];x.innerHTML=m[0];if(o.done&&!DD.won)sfx([523,659,784,1047]);DD.won=o.done?1:0}
+function ddReset(){DD.r1=[];DD.r2=[];DD.tk=[];DD.note='';sfx([330,262,196],'triangle');ddRefresh()}
+function ddAdd(d,r){var o=ddI(),u=Q/d;DD.note='';if(!r)r=o.ok1?2:1;
+ if(r==1){if(o.s1+u>o.T)DD.note='Sudah lebih panjang dari yang diperlukan. Ketuk blok untuk menghapusnya.';else{DD.r1.push(d);sfx([420+DD.r1.length*40])}}
+ else if(!o.ok1)DD.note='Susun dulu pecahannya di baris bawah.';
+ else if(DD.r2.length&&DD.r2[0]!=d)DD.note='Blok di baris atas harus sama besar semua.';
+ else if(o.s2+u>o.T)DD.note='Sudah melewati panjang di baris bawah.';
+ else{DD.r2.push(d);DD.tk=[];sfx([520+DD.r2.length*30])}
+ ddRefresh()}
+function ddviz(m,a,b){var k=m+a.n+'/'+a.d+'_'+b.n+'/'+b.d,h='<div class="viz">'+tgl(m);
+ if(DD.k!=k)DD={k:k,r1:[],r2:[],tk:[],note:'',won:0};
+ if(m=='sub'&&b.n*a.d>a.n*b.d)return h+cap('Pecahan kedua lebih besar daripada pecahan pertama, jadi hasilnya negatif. Coba tukar urutannya.')+'</div>';
+ if(!D.some(function(d){return d[0]%a.d==0&&d[0]%b.d==0}))return h+cap('Pecahan ini perlu penyebut sama lebih dari 12, jadi tidak ada blok yang cocok. Coba tampilan Garis bilangan.')+'</div>';
+ var p='';D.forEach(function(d){p+='<div class="dpal" data-d="'+d[0]+'" style="background:'+d[2]+(d[0]==4?';color:#111':'')+'">'+(d[0]==1?'1':'1/'+d[0])+'</div>'});
+ var mm=ddMsg();
+ return h+'<div class="eq" id="dde">'+ddEq()+'</div><div class="cap" style="text-align:center">Seret blok warna ke garis (atau ketuk blok untuk menambah).</div><div class="dpalw">'+p+'</div><div id="ddb">'+ddBody()+'</div><div class="msg '+mm[1]+'" id="ddm">'+mm[0]+'</div><div class="nav"><button onclick="ddReset()">↺ Ulangi</button></div></div>'}
+function rowAt(v){var e=document.elementFromPoint(v.clientX,v.clientY);return e&&e.closest?e.closest('.ddrow'):null}
+document.addEventListener('pointerdown',function(e){var p=e.target.closest&&e.target.closest('.dpal');if(!p)return;e.preventDefault();
+ var d=+p.dataset.d,gh=document.createElement('div'),sx=e.clientX,sy=e.clientY,mv=false;
+ gh.className='dgh';gh.textContent=p.textContent;gh.style.background=p.style.background;gh.style.color=p.style.color;document.body.appendChild(gh);
+ function pos(v){gh.style.left=v.clientX+'px';gh.style.top=v.clientY+'px'}
+ function hot(r){document.querySelectorAll('.ddrow').forEach(function(x){x.classList.toggle('hot',x===r)})}
+ function mf(v){if(Math.abs(v.clientX-sx)+Math.abs(v.clientY-sy)>6)mv=true;pos(v);hot(rowAt(v))}
+ function up(v){document.removeEventListener('pointermove',mf);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);gh.remove();hot(null);var r=mv?rowAt(v):null;if(mv&&!r)return;ddAdd(d,r?+r.dataset.r:0)}
+ document.addEventListener('pointermove',mf);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);pos(e)});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.db');if(!b)return;var r=+b.dataset.r,i=+b.dataset.i,o=ddI();DD.note='';
+ if(r==2&&!o.ad&&o.ok2){var j=DD.tk.indexOf(i);if(j>=0)DD.tk.splice(j,1);else if(DD.tk.length<o.y2)DD.tk.push(i);else DD.note='Yang diambil cukup '+o.y2+' blok. Ketuk blok merah untuk membatalkan.';sfx([440],'triangle')}
+ else{DD['r'+r].splice(i,1);DD.tk=[];sfx([300],'triangle')}ddRefresh()});
 function pie(d,n){var s='<svg viewBox="-55 -55 110 110" style="width:150px;display:block;margin:auto"><circle r="50" fill="#fff"/>';
  for(var i=0;i<d;i++){var a1=2*Math.PI*i/d-Math.PI/2,a2=2*Math.PI*(i+1)/d-Math.PI/2,c=i<n?'#29b6f6':'#fff';
   s+=d==1?'<circle r="50" fill="'+c+'" stroke="#1f3a5f" stroke-width="2"/>':'<path d="M0 0L'+50*Math.cos(a1)+' '+50*Math.sin(a1)+'A50 50 0 0 1 '+50*Math.cos(a2)+' '+50*Math.sin(a2)+'Z" fill="'+c+'" stroke="#1f3a5f" stroke-width="2"/>'}
@@ -243,7 +357,7 @@ document.getElementById('mbtn').onclick=function(){var on=!mOn;setPref(on?'1':'0
 document.getElementById('vol').oninput=function(){vol=this.value/100;if(MG&&mOn)MG.gain.setTargetAtTime(vol,AC.currentTime,.05)};
 document.addEventListener('visibilitychange',function(){if(!AC)return;if(document.hidden)AC.suspend();else if(mOn)AC.resume()});
 var mm=document.getElementById('modal'),mn=document.getElementById('menu');
-Object.keys(NAME).forEach(function(k){var b=document.createElement('button');b.textContent=NAME[k];b.onclick=function(){sfx([523,659,784]);mode=k;st=1;act=0;guess=null;mm.classList.remove('open');render()};mn.appendChild(b)});
+Object.keys(NAME).forEach(function(k){var b=document.createElement('button');b.textContent=NAME[k];b.onclick=function(){sfx([523,659,784]);mode=k;st=1;ns=1;clearInterval(nlT);act=0;guess=null;mm.classList.remove('open');render()};mn.appendChild(b)});
 document.getElementById('mat').onclick=function(){mm.classList.add('open')};
 mm.onclick=function(e){if(e.target===mm)mm.classList.remove('open')};
 mm.classList.add('open');
